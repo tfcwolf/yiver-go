@@ -19,17 +19,23 @@ type Controller interface {
 type BaseController  struct {
 	C interface{}
 	Db *sql.DB
+	Routes map[string] func(http.ResponseWriter,*http.Request)
 }
 
 
 func (base *BaseController) Get(w http.ResponseWriter, r *http.Request) {
-
+	log.Println("dd")
 }
 
 func (base *BaseController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	log.Println("serveing .....");\\\
-	\\\\
-	base.C.(Controller).Get(w,r);
+	//log.Println("serveing .....");
+	uri := r.URL.Path;
+	if action,ok:=base.Routes[uri];ok {
+		action(w,r)
+	} else {
+		w.Write([]byte("Not Found!"));
+		//base.C.(Controller).Get(w,r);
+	}
 }
 
 

@@ -8,8 +8,10 @@ import (
 
 func main() {
 	app.Init();
-    app.Handle("/list", &front.IndexHandler{})
-    app.Handle("/test",&front.TextHandler{})
+	index := front.NewIndexHandler()
+    app.Handle("/index", index)
+    app.Handle("/index/",index )
+    //app.Handle("/test",&front.TextHandler{})
     
     app.Run()
 

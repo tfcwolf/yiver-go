@@ -3,6 +3,7 @@ import (
 	"net/http"
 	"front"
 	"log"
+	"reflect"
 	//"log"
 )
 var err error 
@@ -22,7 +23,9 @@ func Init() {
 func NewHandler(c interface{}) *front.BaseController {
 	base := &front.BaseController{}
 	base.C = c
-	return base
+	elm := reflect.ValueOf(c).Elem().Field(0).Field(2).Interface();
+	base.Routes = elm.(map[string]func(http.ResponseWriter,*http.Request))
+	return    base
 }
 
 func Handle(pattern string,controller front.Controller) {

@@ -16,6 +16,45 @@ type Posts struct {
     Post_title string
 }
 
+type Navs struct {
+    Id int
+    Cid int 
+    Label string
+    Href string
+}
+
+func NewIndexHandler() *IndexHandler{
+    obj := &IndexHandler{}
+    obj.init()
+    return obj
+}
+
+func (ih *IndexHandler) init() {
+
+    ih.Routes = make(map[string]func(http.ResponseWriter,*http.Request))
+    ih.Routes["/index/show"] = ih.Show   
+}
+
+func (ih *IndexHandler) Show(w http.ResponseWriter, r *http.Request) {
+    rows,err:= Db.Query("select id,cid,href,label from dyb_nav limit 5")
+    if err != nil {
+        log.Println(err)
+        return 
+    }
+
+    defer rows.Close()
+    var navs [] Navs;
+    w.Header().Set("Content-Type", "application/json;charset=utf-8")
+    for rows.Next() {
+        nav := Navs{}
+        rows.Scan(&nav.Id,&nav.Cid,&nav.Label,&nav.Href)
+
+        navs = append(navs,nav)
+    }
+
+     json.NewEncoder(w).Encode(navs);
+}
+
 func (ih *IndexHandler) Get(w http.ResponseWriter, r *http.Request) {
     
     rows,err:= Db.Query("select id,post_title from dyb_posts limit 5")
@@ -42,7 +81,7 @@ func (ih *IndexHandler) Get(w http.ResponseWriter, r *http.Request) {
      
 }
 
-func (ih *IndexHanlder) Create(w http.ResponseWriter,r *http.Request) {
+func (ih *IndexHandler) Create(w http.ResponseWriter,r *http.Request) {
 
 }
 
